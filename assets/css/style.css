@@ -294,7 +294,17 @@ h6 {
 /* User UI */
 #user-section,
 #mobile-user-section {
-  display: flex;
+  display: none;
+}
+
+body.user-logged-in #user-section,
+body.user-logged-in #mobile-user-section {
+  display: flex !important;
+}
+
+body.user-logged-in #auth-btn,
+body.user-logged-in #mobile-auth-btn {
+  display: none !important;
 }
 
 .user-profile {

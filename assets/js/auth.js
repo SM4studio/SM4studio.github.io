@@ -84,89 +84,102 @@ export {
     updateUserProfile
 };
 
-// ─── DOM Elements ─────────────────────────────────────────── 
-const authBtn = document.getElementById('auth-btn');
-const mobileAuthBtn = document.getElementById('mobile-auth-btn');
-const authModal = document.getElementById('auth-modal');
-const authForm = document.getElementById('auth-form');
-const authTitle = document.getElementById('auth-title');
-const authToggleBtn = document.getElementById('auth-toggle-btn');
-const authSubmitBtn = document.getElementById('auth-submit-btn');
-const userSection = document.getElementById('user-section');
-const mobileUserSection = document.getElementById('mobile-user-section');
-
-let isLoginMode = true;
+// ─── DOM Helpers ─────────────────────────────────────────── 
+const get = id => document.getElementById(id);
 
 // ─── UI Functions ─────────────────────────────────────────── 
 function toggleAuthModal(show) {
-    if (!authModal) return;
-    authModal.classList.toggle('active', show);
+    const modal = get('auth-modal');
+    if (!modal) return;
+    modal.classList.toggle('active', show);
     if (show) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
 }
 
 function updateAuthUI(user) {
-    if (user) {
-        // User is signed in
-        const userHtml = `
-            <div class="user-profile">
-                <a href="profile.html">
-                    <img src="${user.photoURL || 'https://i.pravatar.cc/150?u=' + user.uid}" alt="${user.displayName}" class="user-avatar">
-                </a>
-                <div class="user-info">
-                    <span class="user-name"><a href="profile.html" style="text-decoration:none; color: var(--color-heading); font-weight: 800;">${user.displayName || 'Pulse Reader'}</a></span>
-                    <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
-                        <a href="profile.html" class="logout-link" style="text-decoration: none; color: var(--color-primary); font-weight: 700; font-size: 0.85rem;">Settings</a>
-                        <span style="opacity: 0.3; font-size: 0.8rem;">•</span>
-                        <button class="logout-link logout-btn-action" style="font-size: 0.85rem;">Sign Out</button>
+    const doUpdate = () => {
+        const section = get('user-section');
+        const mobileSection = get('mobile-user-section');
+        const btn = get('auth-btn');
+        const mobileBtn = get('mobile-auth-btn');
+
+        if (user) {
+            // User is signed in
+            const userHtml = `
+                <div class="user-profile">
+                    <a href="profile.html">
+                        <img src="${user.photoURL || 'https://i.pravatar.cc/150?u=' + user.uid}" alt="${user.displayName}" class="user-avatar">
+                    </a>
+                    <div class="user-info">
+                        <span class="user-name"><a href="profile.html" style="text-decoration:none; color: var(--color-heading); font-weight: 800;">${user.displayName || 'Pulse Reader'}</a></span>
+                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                            <a href="profile.html" class="logout-link" style="text-decoration: none; color: var(--color-primary); font-weight: 700; font-size: 0.85rem;">Settings</a>
+                            <span style="opacity: 0.3; font-size: 0.8rem;">•</span>
+                            <button class="logout-link logout-btn-action" style="font-size: 0.85rem;">Sign Out</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-        if (userSection) userSection.innerHTML = userHtml;
-        if (mobileUserSection) mobileUserSection.innerHTML = userHtml;
+            `;
+            if (section) section.innerHTML = userHtml;
+            if (mobileSection) mobileSection.innerHTML = userHtml;
 
-        if (authBtn) authBtn.style.display = 'none';
-        if (mobileAuthBtn) mobileAuthBtn.style.display = 'none';
+            if (btn) btn.style.display = 'none';
+            if (mobileBtn) mobileBtn.style.display = 'none';
 
-        // Re-attach listeners
-        document.querySelectorAll('.logout-btn-action').forEach(btn => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                signOut(auth).then(() => {
-                    console.log('Signed out');
-                }).catch(err => console.error(err));
-            };
-        });
+            // Re-attach listeners
+            document.querySelectorAll('.logout-btn-action').forEach(b => {
+                b.ontouchstart = b.onclick = (e) => {
+                    e.preventDefault();
+                    signOut(auth).then(() => {
+                        console.log('Signed out successfully');
+                    }).catch(err => console.error(err));
+                };
+            });
+        } else {
+            // User is signed out
+            if (section) section.innerHTML = '';
+            if (mobileSection) mobileSection.innerHTML = '';
+            if (btn) btn.style.display = 'flex';
+            if (mobileBtn) mobileBtn.style.display = 'flex';
+        }
+
+        if (window.lucide) window.lucide.createIcons();
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', doUpdate);
     } else {
-        // User is signed out
-        if (userSection) userSection.innerHTML = '';
-        if (mobileUserSection) mobileUserSection.innerHTML = '';
-        if (authBtn) authBtn.style.display = 'flex';
-        if (mobileAuthBtn) mobileAuthBtn.style.display = 'flex';
+        doUpdate();
     }
-
-    if (window.lucide) window.lucide.createIcons();
 }
+
+let isLoginMode = true;
 
 function toggleAuthMode() {
     isLoginMode = !isLoginMode;
-    if (authTitle) authTitle.textContent = isLoginMode ? 'Sign In to Your Account' : 'Create an Account';
-    if (authSubmitBtn) authSubmitBtn.textContent = isLoginMode ? 'Sign In' : 'Sign Up';
-    if (authToggleBtn) {
-        authToggleBtn.innerHTML = isLoginMode
+    const title = get('auth-title');
+    const submitBtn = get('auth-submit-btn');
+    const toggleBtn = get('auth-toggle-btn');
+    const nameField = get('auth-name-field');
+
+    if (title) title.textContent = isLoginMode ? 'Sign In to Your Account' : 'Create an Account';
+    if (submitBtn) submitBtn.textContent = isLoginMode ? 'Sign In' : 'Sign Up';
+    if (toggleBtn) {
+        toggleBtn.innerHTML = isLoginMode
             ? 'Don\'t have an account? <span>Sign Up</span>'
             : 'Already have an account? <span>Sign In</span>';
     }
-
-    const nameField = document.getElementById('auth-name-field');
     if (nameField) nameField.style.display = isLoginMode ? 'none' : 'block';
 }
 
 // ─── Auth Listeners ───────────────────────────────────────── 
 onAuthStateChanged(auth, async (user) => {
+    // Robust UI toggle using body class
     if (user) {
+        document.body.classList.add('user-logged-in');
         await syncUserProfile(user);
+    } else {
+        document.body.classList.remove('user-logged-in');
     }
     updateAuthUI(user);
     if (user) toggleAuthModal(false);

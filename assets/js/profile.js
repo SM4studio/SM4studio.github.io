@@ -81,7 +81,7 @@ async function renderUserArticles(uid) {
 
             html += `
                 <div class="user-post-item">
-                    <img src="${post.coverImage}" alt="" class="user-post-thumb">
+                    <img src="${post.image}" alt="" class="user-post-thumb">
                     <div class="user-post-info">
                         <a href="post.html?id=${docSnap.id}" class="user-post-title">${post.title}</a>
                         <span class="user-post-date">${date} • ${post.category}</span>
