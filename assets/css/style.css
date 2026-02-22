@@ -33,9 +33,26 @@
   --radius-md: 12px;
   --radius-full: 9999px;
 
+  /* Badge Colors */
+  --badge-tech-bg: #EFF6FF;
+  --badge-tech-text: #2563EB;
+  --badge-movies-bg: #F5F3FF;
+  --badge-movies-text: #7C3AED;
+  --badge-reviews-bg: #ECFDF5;
+  --badge-reviews-text: #059669;
+  --badge-news-bg: #FFF7ED;
+  --badge-news-text: #D97706;
+  --badge-premium-bg: #FEF3C7;
+  --badge-premium-text: #92400E;
+
   --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   --header-height: 80px;
   --sidebar-width: 340px;
+
+  /* Theme Specific Base */
+  --header-bg: rgba(255, 255, 255, 0.9);
+  --card-bg: #FFFFFF;
+  --glass-bg: rgba(255, 255, 255, 0.8);
 }
 
 /* Dark Mode Variables */
@@ -50,6 +67,22 @@
   --color-heading: #FFFFFF;
 
   --color-primary-light: rgba(37, 99, 235, 0.15);
+
+  --header-bg: rgba(15, 23, 42, 0.9);
+  --card-bg: #1E293B;
+  --glass-bg: rgba(15, 23, 42, 0.8);
+
+  /* Dark Badge Overrides */
+  --badge-tech-bg: rgba(37, 99, 235, 0.2);
+  --badge-tech-text: #60A5FA;
+  --badge-movies-bg: rgba(124, 58, 237, 0.2);
+  --badge-movies-text: #A78BFA;
+  --badge-reviews-bg: rgba(5, 150, 105, 0.2);
+  --badge-reviews-text: #34D399;
+  --badge-news-bg: rgba(217, 119, 6, 0.2);
+  --badge-news-text: #FBBF24;
+  --badge-premium-bg: rgba(245, 158, 11, 0.2);
+  --badge-premium-text: #FDE68A;
 }
 
 /* Base */
@@ -105,7 +138,7 @@ h6 {
   top: 0;
   z-index: 1100;
   height: var(--header-height);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--header-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--color-border);
@@ -279,7 +312,7 @@ h6 {
   height: 34px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fff;
+  border: 2px solid var(--color-bg);
 }
 
 .user-info {
@@ -370,7 +403,7 @@ h6 {
   right: 0;
   bottom: 0;
   width: 320px;
-  background: #fff;
+  background: var(--color-bg);
   z-index: 1150;
   padding: 100px 30px 50px;
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
@@ -481,7 +514,7 @@ h6 {
 }
 
 .hero-featured-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.15);
@@ -506,7 +539,7 @@ h6 {
 
 /* ===================== CATEGORY NAV ==================== */
 .cat-nav {
-  background: #fff;
+  background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: var(--header-height);
@@ -537,7 +570,7 @@ h6 {
   padding: 10px 24px;
   border-radius: 100px;
   border: 1px solid var(--color-border);
-  background: #fff;
+  background: var(--color-bg);
   font-weight: 700;
   color: var(--color-text-muted);
   cursor: pointer;
@@ -572,23 +605,23 @@ h6 {
 }
 
 .badge-tech {
-  background: #EFF6FF;
-  color: #2563EB;
+  background: var(--badge-tech-bg);
+  color: var(--badge-tech-text);
 }
 
 .badge-movies {
-  background: #F5F3FF;
-  color: #7C3AED;
+  background: var(--badge-movies-bg);
+  color: var(--badge-movies-text);
 }
 
 .badge-reviews {
-  background: #ECFDF5;
-  color: #059669;
+  background: var(--badge-reviews-bg);
+  color: var(--badge-reviews-text);
 }
 
 .badge-news {
-  background: #FFF7ED;
-  color: #D97706;
+  background: var(--badge-news-bg);
+  color: var(--badge-news-text);
 }
 
 .tag-chip {
@@ -606,7 +639,7 @@ h6 {
 
 .tag-chip:hover {
   background: var(--color-heading);
-  color: #fff;
+  color: var(--color-bg);
   transform: translateY(-2px);
 }
 
@@ -633,7 +666,7 @@ h6 {
 }
 
 .post-card {
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--color-border);
   border-radius: 20px;
   overflow: hidden;
@@ -649,9 +682,9 @@ h6 {
 }
 
 .badge-news {
-  background: #FFF7ED;
-  color: #EA580C;
-  border: 1px solid #FFEDD5;
+  background: var(--badge-news-bg);
+  color: var(--badge-news-text);
+  border: 1px solid rgba(217, 119, 6, 0.1);
 }
 
 .post-card-image {
@@ -706,7 +739,7 @@ h6 {
   justify-content: center;
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: #fff;
+  background: var(--color-bg);
   font-weight: 700;
   color: var(--color-text-muted);
   cursor: pointer;
@@ -776,7 +809,7 @@ h6 {
 }
 
 .post-content {
-  background: #fff;
+  background: var(--card-bg);
   padding: 50px;
   border-radius: 32px;
   border: 1px solid var(--color-border);
@@ -787,7 +820,7 @@ h6 {
   font-family: var(--font-serif);
   font-size: 1.25rem;
   line-height: 1.85;
-  color: #1E293B;
+  color: var(--color-text);
   max-width: 820px;
   margin: 0 auto;
 }
@@ -904,7 +937,7 @@ h6 {
   gap: 12px;
   margin-bottom: 32px;
   padding: 16px;
-  background: #fff;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: 16px;
 }
@@ -963,7 +996,7 @@ h6 {
 .share-btn {
   width: 44px;
   height: 44px;
-  background: #fff;
+  background: var(--color-bg-gray);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -983,7 +1016,7 @@ h6 {
   display: flex;
   gap: 32px;
   padding: 48px;
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--color-border);
   border-radius: 24px;
   margin: 5rem auto 0;
@@ -1032,7 +1065,7 @@ h6 {
 
 /* Sidebar */
 .sidebar-widget {
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--color-border);
   border-radius: 20px;
   padding: 24px;
@@ -1065,7 +1098,7 @@ h6 {
 }
 
 .sidebar-search input:focus {
-  background: #fff;
+  background: var(--color-bg);
   border-color: var(--color-primary);
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
@@ -1103,7 +1136,7 @@ h6 {
 }
 
 .cat-count {
-  background: #fff;
+  background: var(--color-bg-gray);
   padding: 2px 8px;
   border-radius: 6px;
   font-size: .8rem;
@@ -1161,7 +1194,7 @@ h6 {
 }
 
 .auth-card {
-  background: #fff;
+  background: var(--color-bg);
   padding: 56px;
   border-radius: 32px;
   width: 90%;
@@ -1314,7 +1347,7 @@ h6 {
 }
 
 .clear-filter-btn {
-  background: #fff;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   padding: 6px 12px;
   border-radius: 8px;
@@ -1336,8 +1369,8 @@ h6 {
 
 /* Member Only / Gated Content */
 .badge-premium {
-  background: #FEF3C7;
-  color: #92400E;
+  background: var(--badge-premium-bg);
+  color: var(--badge-premium-text);
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.75rem;
@@ -1362,14 +1395,14 @@ h6 {
 }
 
 .gate-overlay {
-  background: linear-gradient(to top, #fff 60%, transparent);
+  background: linear-gradient(to top, var(--color-bg) 60%, transparent);
   padding: 80px 20px;
   text-align: center;
   border-radius: 0 0 24px 24px;
 }
 
 .gate-card {
-  background: #fff;
+  background: var(--card-bg);
   max-width: 500px;
   margin: 0 auto;
   padding: 40px;
@@ -1408,7 +1441,7 @@ h6 {
   bottom: 40px;
   right: 40px;
   width: 380px;
-  background: #fff;
+  background: var(--color-bg);
   padding: 32px;
   border-radius: 24px;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
@@ -1476,7 +1509,7 @@ h6 {
 .ad-inline {
   display: block;
   max-width: 100%;
-  background: #fff;
+  background: var(--color-bg);
   border-radius: 8px;
   min-height: 120px;
   display: flex;
