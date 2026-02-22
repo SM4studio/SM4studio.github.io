@@ -23,7 +23,13 @@ import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const analytics = getAnalytics(app);
+
+let analytics;
+try {
+    analytics = getAnalytics(app);
+} catch (err) {
+    console.warn("Firebase Analytics could not be initialized:", err);
+}
 
 export { auth, db, analytics, logEvent, collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, updateDoc, doc, getDoc };
 

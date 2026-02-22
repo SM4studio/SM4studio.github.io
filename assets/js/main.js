@@ -118,9 +118,11 @@ function initNewsletterForms() {
                 });
 
                 // 2. Track Analytics Event
-                logEvent(analytics, 'newsletter_signup', {
-                    form_location: form.closest('aside') ? 'sidebar' : 'footer'
-                });
+                if (analytics) {
+                    logEvent(analytics, 'newsletter_signup', {
+                        form_location: form.closest('aside') ? 'sidebar' : 'footer'
+                    });
+                }
 
                 // 3. UI Update
                 btn.textContent = '✓ Subscribed!';
@@ -138,7 +140,11 @@ function initNewsletterForms() {
 
             } catch (err) {
                 console.error('Newsletter error:', err);
-                btn.textContent = 'Error! Try again.';
+                if (err.code === 'permission-denied') {
+                    btn.textContent = 'Setup Error: Check Rules';
+                } else {
+                    btn.textContent = 'Error! Try again.';
+                }
                 btn.disabled = false;
             }
         });

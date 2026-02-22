@@ -195,7 +195,7 @@ function initIndexFilters() {
                     // Track Analytics Search
                     try {
                         import('./auth.js').then(({ analytics, logEvent }) => {
-                            logEvent(analytics, 'search', { search_term: q });
+                            if (analytics) logEvent(analytics, 'search', { search_term: q });
                         });
                     } catch (err) { }
 
