@@ -41,7 +41,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
-<body>
+<body data-theme="light">
+    <!-- Reading Progress Bar -->
+    <div id="reading-progress" class="reading-progress"></div>
 
     <!-- ═══════════════════════════════════════════════════════════
      SITE HEADER
@@ -69,6 +71,12 @@
                 <input type="search" placeholder="Search posts… (Enter)" aria-label="Search blog posts"
                     id="header-search-input">
             </div>
+
+            <!-- Theme Toggle -->
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="sun" class="sun-icon"></i>
+                <i data-lucide="moon" class="moon-icon"></i>
+            </button>
 
             <!-- Auth Section -->
             <div id="user-section"></div>

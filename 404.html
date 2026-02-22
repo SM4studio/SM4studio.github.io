@@ -13,7 +13,9 @@
         crossorigin="anonymous"></script>
 </head>
 
-<body>
+<body data-theme="light">
+    <!-- Reading Progress Bar -->
+    <div id="reading-progress" class="reading-progress"></div>
     <header class="site-header">
         <div class="container header-inner">
             <a href="index.html" class="logo">
@@ -23,13 +25,19 @@
             <nav class="nav-links">
                 <a href="index.html">Home</a>
             </nav>
+            <!-- Theme Toggle -->
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="sun" class="sun-icon"></i>
+                <i data-lucide="moon" class="moon-icon"></i>
+            </button>
+
             <div id="user-section"></div>
         </div>
     </header>
 
     <main class="container" style="padding: 120px 0; text-align: center;">
         <div
-            style="font-size: 8rem; font-weight: 900; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">
+            style="font-size: 8rem; font-weight: 900; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">
             404</div>
         <h1 style="font-size: 2.5rem; margin: 20px 0;">Oops! Page Not Found</h1>
         <p

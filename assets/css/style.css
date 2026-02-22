@@ -38,6 +38,20 @@
   --sidebar-width: 340px;
 }
 
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --color-bg: #0F172A;
+  --color-bg-soft: #1E293B;
+  --color-bg-gray: #334155;
+  --color-border: #334155;
+  --color-text: #F8FAFC;
+  --color-text-muted: #94A3B8;
+  --color-text-light: #64748B;
+  --color-heading: #FFFFFF;
+
+  --color-primary-light: rgba(37, 99, 235, 0.15);
+}
+
 /* Base */
 *,
 *::before,
@@ -180,6 +194,68 @@ h6 {
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-text-light);
+  display: flex;
+}
+
+/* Theme Toggle */
+.theme-toggle-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--color-bg-gray);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: 300ms;
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.sun-icon,
+.moon-icon {
+  position: absolute;
+  transition: 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .sun-icon {
+  transform: translateY(40px);
+  opacity: 0;
+}
+
+[data-theme="light"] .moon-icon {
+  transform: translateY(0);
+  opacity: 1;
+  color: #1E293B;
+}
+
+[data-theme="dark"] .sun-icon {
+  transform: translateY(0);
+  opacity: 1;
+  color: #FBBF24;
+}
+
+[data-theme="dark"] .moon-icon {
+  transform: translateY(-40px);
+  opacity: 0;
+}
+
+/* Reading Progress Bar */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 4px;
+  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  z-index: 2000;
+  transition: width 100ms linear;
 }
 
 /* User UI */
@@ -517,7 +593,8 @@ h6 {
 
 .tag-chip {
   display: inline-flex;
-  padding: 6px 14px;
+  padding: 4px 10px;
+  margin: 4px;
   background: var(--color-bg-gray);
   border-radius: 8px;
   font-size: 0.85rem;

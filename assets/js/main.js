@@ -42,16 +42,43 @@ function initScrollTop() {
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-/* ─── Reading Progress Bar (post.html only) ─────────────────── */
+/* ─── Reading Progress Bar ─────────────────── */
 function initReadingProgress() {
     const bar = $('reading-progress');
     if (!bar) return;
 
     window.addEventListener('scroll', () => {
         const docH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+        const scroll = window.scrollY;
+        const pct = docH > 0 ? (scroll / docH) * 100 : 0;
         bar.style.width = pct + '%';
     }, { passive: true });
+}
+
+/* ─── Theme Toggle (Dark/Light) ────────────────────────────── */
+function initThemeToggle() {
+    const btn = $('theme-toggle');
+    const body = document.body;
+    if (!btn) return;
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    body.setAttribute('data-theme', savedTheme);
+
+    btn.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+
+        // Track analytics
+        try {
+            import('./auth.js').then(({ analytics, logEvent }) => {
+                if (analytics) logEvent(analytics, 'theme_change', { theme: newTheme });
+            });
+        } catch (err) { }
+    });
 }
 
 /* ─── Scroll-reveal Animations ──────────────────────────────── */
@@ -670,6 +697,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initMobileNav();
     initScrollTop();
     initReadingProgress();
+    initThemeToggle();
     initFadeIn();
     setActiveNav();
     initNewsletterForms();
