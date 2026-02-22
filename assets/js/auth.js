@@ -114,11 +114,11 @@ function updateAuthUI(user) {
                     <img src="${user.photoURL || 'https://i.pravatar.cc/150?u=' + user.uid}" alt="${user.displayName}" class="user-avatar">
                 </a>
                 <div class="user-info">
-                    <span class="user-name"><a href="profile.html" style="text-decoration:none;">${user.displayName || 'User'}</a></span>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="profile.html" class="logout-link" style="text-decoration: none; color: var(--color-primary); font-weight: 700;">Dashboard</a>
-                        <span style="opacity: 0.3;">|</span>
-                        <button class="logout-link logout-btn-action">Sign Out</button>
+                    <span class="user-name"><a href="profile.html" style="text-decoration:none; color: var(--color-heading); font-weight: 800;">${user.displayName || 'Pulse Reader'}</a></span>
+                    <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                        <a href="profile.html" class="logout-link" style="text-decoration: none; color: var(--color-primary); font-weight: 700; font-size: 0.85rem;">Settings</a>
+                        <span style="opacity: 0.3; font-size: 0.8rem;">•</span>
+                        <button class="logout-link logout-btn-action" style="font-size: 0.85rem;">Sign Out</button>
                     </div>
                 </div>
             </div>
@@ -174,36 +174,52 @@ onAuthStateChanged(auth, async (user) => {
 
 // ─── Event Listeners ──────────────────────────────────────── 
 document.addEventListener('DOMContentLoaded', () => {
-    authBtn?.addEventListener('click', () => toggleAuthModal(true));
-    mobileAuthBtn?.addEventListener('click', () => toggleAuthModal(true));
+    // Re-query elements inside DOMContentLoaded for robustness
+    const currentAuthForm = document.getElementById('auth-form');
+    const currentGoogleBtn = document.getElementById('google-signin-btn');
+    const currentAuthBtn = document.getElementById('auth-btn');
+    const currentMobileAuthBtn = document.getElementById('mobile-auth-btn');
+
+    currentAuthBtn?.addEventListener('click', () => toggleAuthModal(true));
+    currentMobileAuthBtn?.addEventListener('click', () => toggleAuthModal(true));
 
     document.getElementById('auth-close')?.addEventListener('click', () => toggleAuthModal(false));
 
-    authToggleBtn?.addEventListener('click', (e) => {
+    document.getElementById('auth-toggle-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         toggleAuthMode();
     });
 
     // Google Sign In
-    document.getElementById('google-signin-btn')?.addEventListener('click', async () => {
+    currentGoogleBtn?.addEventListener('click', async () => {
         try {
+            const btn = currentGoogleBtn;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader" class="animate-spin" style="width:18px;"></i> Signing in...';
+            if (window.lucide) window.lucide.createIcons();
+
             await signInWithPopup(auth, googleProvider);
             logEvent(analytics, 'login', { method: 'google' });
+            toggleAuthModal(false);
         } catch (err) {
             console.error('Google Auth error:', err);
             alert('Google login failed: ' + err.message);
+            currentGoogleBtn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo"> Continue with Google';
         }
     });
 
-    authForm?.addEventListener('submit', async (e) => {
+    currentAuthForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitBtn = document.getElementById('auth-submit-btn');
         const email = document.getElementById('auth-email').value;
         const password = document.getElementById('auth-password').value;
         const name = document.getElementById('auth-name')?.value;
 
         try {
-            authSubmitBtn.disabled = true;
-            authSubmitBtn.textContent = isLoginMode ? 'Signing in...' : 'Creating account...';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = isLoginMode ? 'Signing in...' : 'Creating...';
+            }
 
             if (isLoginMode) {
                 await signInWithEmailAndPassword(auth, email, password);
@@ -218,16 +234,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 logEvent(analytics, 'sign_up', { method: 'email' });
                 updateAuthUI(userCredential.user);
             }
+            toggleAuthModal(false);
         } catch (error) {
-            console.error('Auth error:', error);
-            alert(error.message);
+            console.error('Auth error:', error.code, error.message);
+            let msg = error.message;
+            if (error.code === 'auth/invalid-credential') msg = "Invalid email or password.";
+            if (error.code === 'auth/user-not-found') msg = "No account found with this email.";
+            alert(msg);
         } finally {
-            authSubmitBtn.disabled = false;
-            authSubmitBtn.textContent = isLoginMode ? 'Sign In' : 'Sign Up';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLoginMode ? 'Sign In' : 'Sign Up';
+            }
         }
     });
 
-    authModal?.addEventListener('click', (e) => {
-        if (e.target === authModal) toggleAuthModal(false);
+    const modal = document.getElementById('auth-modal');
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) toggleAuthModal(false);
     });
 });

@@ -308,11 +308,17 @@ h6 {
 }
 
 .user-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
   object-fit: cover;
-  border: 2px solid var(--color-bg);
+  border: 2px solid var(--color-primary-light);
+  transition: 200ms;
+}
+
+.user-profile:hover .user-avatar {
+  border-color: var(--color-primary);
+  transform: scale(1.05);
 }
 
 .user-info {
@@ -1346,14 +1352,16 @@ h6 {
   transition: 200ms;
 }
 
-.btn-googleImage {
-  width: 18px;
-  height: 18px;
+.btn-google img {
+  width: 20px;
+  height: 20px;
 }
 
 .btn-google:hover {
   background: var(--color-bg-gray);
-  border-color: var(--color-text-light);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* ===================== PROFILE PAGE ==================== */

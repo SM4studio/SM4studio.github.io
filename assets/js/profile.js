@@ -17,27 +17,43 @@ async function renderProfileData(user) {
     // 1. Fetch from Firestore (Extended Data)
     const userRef = doc(db, 'users', user.uid);
     const snap = await getDoc(userRef);
-    const userData = snap.exists() ? snap.data() : {};
+    const userData = snap.exists() ? snap.data() : { bio: '', socials: {} };
 
     // 2. Update Sidebar
-    $('display-name').textContent = user.displayName || 'Pulse Reader';
-    $('display-email').textContent = user.email;
-    $('display-bio').textContent = userData.bio || "I'm a reader at The Pulse.";
-    $('display-avatar').src = user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`;
+    const displayName = userData.displayName || user.displayName || 'Pulse Reader';
+    const photoURL = userData.photoURL || user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`;
+    const bio = userData.bio || "Welcome to my profile! I'm a reader at The Pulse.";
+
+    if ($('display-name')) $('display-name').textContent = displayName;
+    if ($('display-email')) $('display-email').textContent = user.email;
+    if ($('display-bio')) $('display-bio').textContent = bio;
+    if ($('display-avatar')) $('display-avatar').src = photoURL;
 
     // 3. Social Links
     const socials = userData.socials || {};
-    if (socials.twitter) $('link-twitter').href = `https://twitter.com/${socials.twitter.replace('@', '')}`;
-    if (socials.github) $('link-github').href = `https://github.com/${socials.github}`;
-    if (socials.linkedin) $('link-linkedin').href = socials.linkedin;
+    if ($('link-twitter')) {
+        const twitter = socials.twitter ? `https://twitter.com/${socials.twitter.replace('@', '')}` : '#';
+        $('link-twitter').href = twitter;
+        $('link-twitter').style.opacity = socials.twitter ? '1' : '0.3';
+    }
+    if ($('link-github')) {
+        const github = socials.github ? `https://github.com/${socials.github}` : '#';
+        $('link-github').href = github;
+        $('link-github').style.opacity = socials.github ? '1' : '0.3';
+    }
+    if ($('link-linkedin')) {
+        const linkedin = socials.linkedin || '#';
+        $('link-linkedin').href = linkedin;
+        $('link-linkedin').style.opacity = socials.linkedin ? '1' : '0.3';
+    }
 
     // 4. Populate Form
-    $('edit-name').value = user.displayName || '';
-    $('edit-photo').value = user.photoURL || '';
-    $('edit-bio').value = userData.bio || '';
-    $('edit-twitter').value = socials.twitter || '';
-    $('edit-github').value = socials.github || '';
-    $('edit-linkedin').value = socials.linkedin || '';
+    if ($('edit-name')) $('edit-name').value = displayName;
+    if ($('edit-photo')) $('edit-photo').value = photoURL;
+    if ($('edit-bio')) $('edit-bio').value = userData.bio || '';
+    if ($('edit-twitter')) $('edit-twitter').value = socials.twitter || '';
+    if ($('edit-github')) $('edit-github').value = socials.github || '';
+    if ($('edit-linkedin')) $('edit-linkedin').value = socials.linkedin || '';
 }
 
 async function renderUserArticles(uid) {
