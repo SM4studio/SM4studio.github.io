@@ -15,14 +15,21 @@ const firebaseConfig = {
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import {
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    signOut, updateProfile, GoogleAuthProvider, signInWithPopup
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
+    getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp,
+    deleteDoc, updateDoc, doc, getDoc, setDoc, where
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
 let analytics;
 try {
@@ -31,7 +38,51 @@ try {
     console.warn("Firebase Analytics could not be initialized:", err);
 }
 
-export { auth, db, analytics, logEvent, collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, updateDoc, doc, getDoc };
+// ─── Profile Support ──────────────────────────────────────────
+/**
+ * Sync user profile to Firestore
+ */
+async function syncUserProfile(user) {
+    if (!user) return;
+    const userRef = doc(db, 'users', user.uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+        await setDoc(userRef, {
+            uid: user.uid,
+            displayName: user.displayName || 'Pulse Reader',
+            email: user.email,
+            photoURL: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+            bio: "I'm a reader at The Pulse.",
+            socials: { twitter: '', github: '', linkedin: '' },
+            createdAt: serverTimestamp()
+        });
+    } else {
+        // Update basic info in case it changed in Google/Auth
+        await updateDoc(userRef, {
+            displayName: user.displayName || snap.data().displayName,
+            photoURL: user.photoURL || snap.data().photoURL
+        });
+    }
+}
+
+/**
+ * Update extended profile data (Bio, Socials)
+ */
+async function updateUserProfile(data) {
+    if (!auth.currentUser) return;
+    const userRef = doc(db, 'users', auth.currentUser.uid);
+    await updateDoc(userRef, {
+        ...data,
+        updatedAt: serverTimestamp()
+    });
+}
+
+export {
+    auth, db, analytics, logEvent, collection, addDoc, getDocs, query,
+    orderBy, serverTimestamp, deleteDoc, updateDoc, doc, getDoc, where,
+    updateUserProfile
+};
 
 // ─── DOM Elements ─────────────────────────────────────────── 
 const authBtn = document.getElementById('auth-btn');
@@ -59,11 +110,13 @@ function updateAuthUI(user) {
         // User is signed in
         const userHtml = `
             <div class="user-profile">
-                <img src="${user.photoURL || 'https://i.pravatar.cc/150?u=' + user.uid}" alt="${user.displayName}" class="user-avatar">
+                <a href="profile.html">
+                    <img src="${user.photoURL || 'https://i.pravatar.cc/150?u=' + user.uid}" alt="${user.displayName}" class="user-avatar">
+                </a>
                 <div class="user-info">
-                    <span class="user-name">${user.displayName || 'User'}</span>
+                    <span class="user-name"><a href="profile.html" style="text-decoration:none;">${user.displayName || 'User'}</a></span>
                     <div style="display: flex; gap: 8px;">
-                        <a href="create-post.html" class="logout-link" style="text-decoration: none; color: var(--color-primary); font-weight: 700;">Write Post</a>
+                        <a href="profile.html" class="logout-link" style="text-decoration: none; color: var(--color-primary); font-weight: 700;">Dashboard</a>
                         <span style="opacity: 0.3;">|</span>
                         <button class="logout-link logout-btn-action">Sign Out</button>
                     </div>
@@ -76,7 +129,7 @@ function updateAuthUI(user) {
         if (authBtn) authBtn.style.display = 'none';
         if (mobileAuthBtn) mobileAuthBtn.style.display = 'none';
 
-        // Re-attach listeners to all logout buttons
+        // Re-attach listeners
         document.querySelectorAll('.logout-btn-action').forEach(btn => {
             btn.onclick = (e) => {
                 e.preventDefault();
@@ -93,7 +146,6 @@ function updateAuthUI(user) {
         if (mobileAuthBtn) mobileAuthBtn.style.display = 'flex';
     }
 
-    // Ensure icons are created/updated in the new HTML
     if (window.lucide) window.lucide.createIcons();
 }
 
@@ -112,7 +164,10 @@ function toggleAuthMode() {
 }
 
 // ─── Auth Listeners ───────────────────────────────────────── 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await syncUserProfile(user);
+    }
     updateAuthUI(user);
     if (user) toggleAuthModal(false);
 });
@@ -127,6 +182,17 @@ document.addEventListener('DOMContentLoaded', () => {
     authToggleBtn?.addEventListener('click', (e) => {
         e.preventDefault();
         toggleAuthMode();
+    });
+
+    // Google Sign In
+    document.getElementById('google-signin-btn')?.addEventListener('click', async () => {
+        try {
+            await signInWithPopup(auth, googleProvider);
+            logEvent(analytics, 'login', { method: 'google' });
+        } catch (err) {
+            console.error('Google Auth error:', err);
+            alert('Google login failed: ' + err.message);
+        }
     });
 
     authForm?.addEventListener('submit', async (e) => {
@@ -148,8 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     displayName: name,
                     photoURL: `https://i.pravatar.cc/150?u=${userCredential.user.uid}`
                 });
+                await syncUserProfile(userCredential.user);
                 logEvent(analytics, 'sign_up', { method: 'email' });
-                // Force UI update
                 updateAuthUI(userCredential.user);
             }
         } catch (error) {
@@ -161,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Close modal on background click
     authModal?.addEventListener('click', (e) => {
         if (e.target === authModal) toggleAuthModal(false);
     });

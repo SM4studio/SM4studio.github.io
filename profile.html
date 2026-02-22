@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | The Pulse</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body data-theme="light">
+    <!-- Reading Progress Bar -->
+    <div id="reading-progress" class="reading-progress"></div>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><i data-lucide="newspaper"></i></div>
+                <span class="logo-text">The <span>Pulse</span></span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="create-post.html">Write Post</a>
+            </nav>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="sun" class="sun-icon"></i>
+                <i data-lucide="moon" class="moon-icon"></i>
+            </button>
+            <div id="user-section"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="profile-layout">
+            <!-- Sidebar: User Preview -->
+            <aside class="profile-sidebar">
+                <div class="profile-sidebar-card">
+                    <div class="profile-avatar-wrapper">
+                        <img id="display-avatar" src="https://i.pravatar.cc/150" alt="Avatar"
+                            class="profile-avatar-large">
+                        <label for="avatar-input" class="edit-avatar-btn">
+                            <i data-lucide="camera"></i>
+                            <input type="file" id="avatar-input" style="display:none;" accept="image/*">
+                        </label>
+                    </div>
+                    <div class="profile-details">
+                        <h1 id="display-name">Loading...</h1>
+                        <span id="display-email" class="profile-user-email">...</span>
+                        <p id="display-bio" class="profile-bio-text">
+                            Loading your bio...
+                        </p>
+                        <div class="profile-socials">
+                            <a href="#" id="link-twitter" class="profile-social-link" target="_blank"><i
+                                    data-lucide="twitter"></i></a>
+                            <a href="#" id="link-github" class="profile-social-link" target="_blank"><i
+                                    data-lucide="github"></i></a>
+                            <a href="#" id="link-linkedin" class="profile-social-link" target="_blank"><i
+                                    data-lucide="linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content: Edit & Posts -->
+            <div class="profile-content">
+                <!-- Edit Profile Section -->
+                <section class="dashboard-section">
+                    <h2 class="section-title"><i data-lucide="settings"></i> Personal Settings</h2>
+                    <form id="profile-edit-form" class="profile-edit-form">
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" id="edit-name" placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Image URL</label>
+                            <input type="text" id="edit-photo" placeholder="https://image-url.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Twitter Handle</label>
+                            <input type="text" id="edit-twitter" placeholder="@username">
+                        </div>
+                        <div class="form-group">
+                            <label>GitHub Profile</label>
+                            <input type="text" id="edit-github" placeholder="username">
+                        </div>
+                        <div class="form-group">
+                            <label>LinkedIn URL</label>
+                            <input type="text" id="edit-linkedin" placeholder="full profile url">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Short Bio</label>
+                            <textarea id="edit-bio"
+                                style="width:100%; padding:14px; border-radius:12px; border:1.5px solid var(--color-border); font-family:inherit; min-height:100px; background: var(--color-bg-soft);"
+                                placeholder="Tell us about yourself..."></textarea>
+                        </div>
+                        <button type="submit" id="save-profile-btn" class="btn btn-primary full-width"
+                            style="justify-content:center; padding:16px;">
+                            Save Profile Changes
+                        </button>
+                    </form>
+                </section>
+
+                <!-- My Articles Section -->
+                <section class="dashboard-section">
+                    <h2 class="section-title"><i data-lucide="book-open"></i> My Articles</h2>
+                    <div id="user-posts-list" class="user-posts-list">
+                        <!-- Posts will be rendered here -->
+                        <p style="color: var(--color-text-muted); padding:32px; text-align:center;">You haven't
+                            published any articles yet.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-bottom">
+            <span>© 2026 The Pulse Blog. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <!-- Auth Modal (fallback) -->
+    <div class="auth-modal" id="auth-modal">
+        <div class="auth-card">
+            <h2 style="text-align:center; margin-bottom:24px;">Please Sign In</h2>
+            <button class="btn btn-primary" onclick="window.location.href='index.html'"
+                style="width:100%; justify-content:center;">Go to Home</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="assets/js/auth.js"></script>
+    <script type="module" src="assets/js/profile.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
