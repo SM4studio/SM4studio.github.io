@@ -438,6 +438,14 @@ h6 {
   padding: 12px 0;
 }
 
+@media (max-width: 768px) {
+  .cat-nav {
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    padding: 12px 10px;
+  }
+}
+
 .cat-nav-inner {
   display: flex;
   gap: 12px;
@@ -1498,7 +1506,20 @@ h6 {
   animation: shimmer 2s infinite linear;
 }
 
-/* Responsive */
+/* ===================== RESPONSIVE DESIGN ==================== */
+
+/* Large Tablets & Narrow Laptops */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 95%;
+  }
+
+  .main-layout {
+    gap: 32px;
+  }
+}
+
+/* Tablets (Portrait) */
 @media (max-width: 1024px) {
   .main-layout {
     grid-template-columns: 1fr;
@@ -1506,10 +1527,25 @@ h6 {
 
   .sidebar {
     margin-top: 64px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .sidebar-widget {
+    margin-bottom: 0;
+  }
+
+  .sidebar-widget:last-child {
+    grid-column: span 2;
   }
 }
 
+/* Mobile (Landscape & Large Phones) */
 @media (max-width: 768px) {
+  :root {
+    --header-height: 70px;
+  }
 
   .nav-links,
   .header-search,
@@ -1525,13 +1561,52 @@ h6 {
     grid-template-columns: 1fr;
   }
 
-  .container {
-    padding: 0 16px;
+  .sidebar {
+    grid-template-columns: 1fr;
   }
 
+  .sidebar-widget:last-child {
+    grid-column: span 1;
+  }
+
+  .hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 48px;
+  }
+
+  .hero-content {
+    order: 2;
+  }
+
+  .hero-featured-card {
+    order: 1;
+    transform: none;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .hero-featured-card img {
+    height: 250px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    text-align: center;
+  }
+
+  .footer-brand p {
+    margin: 0 auto;
+  }
+
+  .footer-col ul {
+    align-items: center;
+  }
+
+  /* Post Detail Specifics on Mobile */
   .post-content {
-    padding: 24px 20px;
-    border-radius: 20px;
+    padding: 24px 0;
     border: none;
     box-shadow: none;
     background: transparent;
@@ -1544,6 +1619,73 @@ h6 {
   .post-cover img {
     border-radius: 12px;
     aspect-ratio: 16 / 9;
-    /* Slightly more height on mobile for better visibility */
+  }
+
+  .article-body {
+    font-size: 1.15rem;
+  }
+
+  .author-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 24px;
+  }
+
+  .author-avatar-large {
+    width: 80px;
+    height: 80px;
+  }
+
+  .share-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .share-label {
+    width: 100%;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+}
+
+/* Small Mobile Phones (iPhone SE, etc.) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  .cat-btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+
+  .newsletter-popup {
+    width: calc(100% - 32px);
+    left: 16px;
+    bottom: 16px;
+    padding: 24px;
+  }
+
+  .auth-card {
+    width: 95%;
+    padding: 24px;
+  }
+
+  .post-main-title {
+    font-size: 1.8rem;
+  }
+
+  .article-body blockquote {
+    font-size: 1.15rem;
+    padding: 20px;
+  }
+
+  .ad-zone {
+    padding: 16px;
   }
 }
