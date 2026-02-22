@@ -23,11 +23,19 @@
                 <a href="index.html">Home</a>
                 <a href="create-post.html">Write Post</a>
             </nav>
-            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">
-                <i data-lucide="sun" class="sun-icon"></i>
-                <i data-lucide="moon" class="moon-icon"></i>
-            </button>
-            <div id="user-section"></div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+
+                <div id="user-section"></div>
+                <!-- Auth button hidden on profile page usually, but kept for JS consistency -->
+                <button class="btn btn-primary" id="auth-btn" style="display: none;">
+                    <i data-lucide="user"></i>
+                    Sign In
+                </button>
+            </div>
         </div>
     </header>
 

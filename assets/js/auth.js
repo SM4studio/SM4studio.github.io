@@ -174,14 +174,25 @@ function toggleAuthMode() {
 
 // ─── Auth Listeners ───────────────────────────────────────── 
 onAuthStateChanged(auth, async (user) => {
-    // Robust UI toggle using body class
+    // 1. Update UI Instantly (Fail-safe)
     if (user) {
         document.body.classList.add('user-logged-in');
-        await syncUserProfile(user);
     } else {
         document.body.classList.remove('user-logged-in');
     }
     updateAuthUI(user);
+
+    // 2. Perform background sync
+    if (user) {
+        try {
+            await syncUserProfile(user);
+            // Refresh UI once more to get latest Firestore data (e.g. updated photoURL)
+            updateAuthUI(auth.currentUser);
+        } catch (err) {
+            console.warn("Profile sync failed:", err);
+        }
+    }
+
     if (user) toggleAuthModal(false);
 });
 

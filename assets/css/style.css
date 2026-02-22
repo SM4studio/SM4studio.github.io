@@ -230,6 +230,12 @@ h6 {
   display: flex;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 /* Theme Toggle */
 .theme-toggle-btn {
   width: 44px;
