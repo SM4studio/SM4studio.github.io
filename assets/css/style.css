@@ -1499,6 +1499,60 @@ body.user-logged-in #mobile-auth-btn {
   gap: 24px;
 }
 
+.profile-edit-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-edit-form label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-left: 4px;
+}
+
+.profile-edit-form input,
+.profile-edit-form textarea {
+  padding: 14px 18px;
+  background: var(--color-bg-soft);
+  border: 1.5px solid var(--color-border);
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--color-heading);
+  transition: var(--transition-base);
+  width: 100%;
+}
+
+.profile-edit-form input:hover,
+.profile-edit-form textarea:hover {
+  border-color: var(--color-text-light);
+  background: var(--color-bg);
+}
+
+.profile-edit-form input:focus,
+.profile-edit-form textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-bg);
+  box-shadow: 0 0 0 4px var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.profile-edit-form textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+#save-profile-btn {
+  margin-top: 12px;
+  padding: 18px;
+  justify-content: center;
+}
+
 .full-width {
   grid-column: span 2;
 }
