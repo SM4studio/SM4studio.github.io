@@ -230,24 +230,36 @@ function initShareBar() {
 
     copyBtn.addEventListener('click', async () => {
         try {
-            setTimeout(async () => {
-                try {
-                    const { analytics, logEvent } = await import('./auth.js');
+            await navigator.clipboard.writeText(window.location.href);
+
+            // Analytics
+            try {
+                const { analytics, logEvent } = await import('./auth.js');
+                if (analytics) {
                     logEvent(analytics, 'share', {
                         method: 'clipboard',
                         content_type: 'article',
                         item_id: window.location.search
                     });
-                } catch (err) { }
-            }, 0);
-            copyBtn.textContent = '✓';
-            copyBtn.title = 'Copied!';
+                }
+            } catch (err) { }
+
+            // UX Feedback
+            const originalHTML = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i data-lucide="check" style="color:#10b981"></i>';
+            if (window.lucide) lucide.createIcons();
+
+            copyBtn.classList.add('copied');
+
             setTimeout(() => {
-                copyBtn.innerHTML = '🔗';
-                copyBtn.title = 'Copy link';
+                copyBtn.innerHTML = originalHTML;
+                if (window.lucide) lucide.createIcons();
+                copyBtn.classList.remove('copied');
             }, 2000);
-        } catch {
-            copyBtn.title = 'Could not copy';
+        } catch (err) {
+            console.error('Clipboard error:', err);
+            copyBtn.innerHTML = '<i data-lucide="alert-circle" style="color:#ef4444"></i>';
+            if (window.lucide) lucide.createIcons();
         }
     });
 }
@@ -623,10 +635,12 @@ async function renderSinglePost() {
 
     <div class="share-bar">
       <span class="share-label">Share this article:</span>
-      <a class="share-btn" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter"><i data-lucide="twitter"></i></a>
-      <a class="share-btn" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"><i data-lucide="facebook"></i></a>
-      <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn"><i data-lucide="linkedin"></i></a>
-      <button class="share-btn" id="share-copy" aria-label="Copy link"><i data-lucide="link"></i></button>
+      <div class="share-btns">
+        <a class="share-btn twitter" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter"><i data-lucide="twitter"></i></a>
+        <a class="share-btn facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"><i data-lucide="facebook"></i></a>
+        <a class="share-btn linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn"><i data-lucide="linkedin"></i></a>
+        <button class="share-btn copy" id="share-copy" title="Copy link" aria-label="Copy article link"><i data-lucide="link"></i></button>
+      </div>
     </div>
 
     <!-- Author Card -->
@@ -642,6 +656,24 @@ async function renderSinglePost() {
         </div>
       </div>
     </div>
+    
+    <div class="comments-section" id="comments">
+      <div class="comments-header">
+        <h3><i data-lucide="message-square"></i> Discussion</h3>
+        <span id="comment-count-display">${post.commentCount || 0} Comments</span>
+      </div>
+
+      <div id="comment-input-area">
+        <!-- Filled by JS based on Auth -->
+      </div>
+
+      <div class="comments-list" id="comments-list">
+        <div style="text-align:center; padding: 2rem; color: var(--color-text-muted);">
+          <i data-lucide="loader" class="animate-spin" style="margin-bottom: 8px;"></i>
+          <p>Loading conversation...</p>
+        </div>
+      </div>
+    </div>
     ` : ''}
     `;
 
@@ -654,6 +686,7 @@ async function renderSinglePost() {
 
     // Init share functionality
     initShareBar();
+    initComments(post.id);
     observeNewElements();
 
     // Manual Ad Zone in Sidebar (Single Post)
@@ -733,3 +766,168 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     } catch (err) { }
 });
+
+/*  Comments Logic  */
+async function initComments(postId) {
+    const inputArea = document.getElementById('comment-input-area');
+    const listArea = document.getElementById('comments-list');
+    if (!inputArea || !listArea) return;
+
+    // Convert postId to string for consistent querying
+    const pid = String(postId).trim();
+    console.log(`[Comments] Initializing for post: ${pid}`);
+
+    const { auth, db, collection, addDoc, query, where, orderBy, serverTimestamp, onAuthStateChanged, onSnapshot } = await import('./auth.js');
+
+    // 1. Handle Auth State for Input
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            inputArea.innerHTML = `
+                <div class="comment-input-wrap">
+                    <img src="${user.photoURL || 'https://i.pravatar.cc/150?u=' + user.uid}" alt="You" class="user-avatar-small">
+                    <form class="comment-form" id="post-comment-form">
+                        <textarea id="comment-textarea" placeholder="Join the discussion…" required></textarea>
+                        <div class="comment-form-actions">
+                            <button type="submit" class="btn btn-primary" id="submit-comment">Post Comment</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            const form = document.getElementById('post-comment-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const textarea = document.getElementById('comment-textarea');
+                    const content = textarea.value.trim();
+                    if (!content) return;
+
+                    const btn = document.getElementById('submit-comment');
+                    try {
+                        btn.disabled = true;
+                        btn.textContent = 'Posting…';
+
+                        await addDoc(collection(db, 'comments'), {
+                            postId: pid,
+                            uid: user.uid,
+                            userName: user.displayName || 'Anonymous Reader',
+                            userAvatar: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+                            content: content,
+                            timestamp: serverTimestamp()
+                        });
+
+                        textarea.value = '';
+                        console.log('[Comments] Comment posted successfully');
+                    } catch (err) {
+                        console.error('[Comments] Post error:', err);
+                        alert('Could not post comment. Please try again.');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = 'Post Comment';
+                    }
+                });
+            }
+        } else {
+            inputArea.innerHTML = `
+                <div class="comment-gate">
+                    <div class="gate-icon" style="width: 50px; height: 50px; background: var(--color-bg-soft); display: flex; align-items: center; justify-content: center; border-radius: 50%;"><i data-lucide="message-circle"></i></div>
+                    <p>Have something to say? Sign in to join the conversation and share your thoughts with the community.</p>
+                    <button class="btn btn-primary" id="signin-to-comment">Sign In to Comment</button>
+                </div>
+            `;
+            const signInBtn = document.getElementById('signin-to-comment');
+            if (signInBtn) {
+                signInBtn.addEventListener('click', () => {
+                    const authBtn = document.getElementById('auth-btn');
+                    if (authBtn) authBtn.click();
+                });
+            }
+        }
+        if (window.lucide) lucide.createIcons();
+    });
+
+    // 2. Fetch and Render Comments (Real-time)
+    function subscribeToComments() {
+        // Query only with postId to avoid requiring a composite index for orderBy
+        const q = query(
+            collection(db, 'comments'),
+            where('postId', '==', pid)
+        );
+
+        console.log(`[Comments] Subscribing to comments for postId: ${pid}`);
+
+        return onSnapshot(q, (snap) => {
+            let comments = [];
+            snap.forEach(doc => {
+                const data = doc.data();
+                comments.push({ id: doc.id, ...data });
+            });
+
+            // Sort manually in JS to avoid "Query requires an index" error
+            comments.sort((a, b) => {
+                const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : (a.timestamp || 0);
+                const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : (b.timestamp || 0);
+                return timeB - timeA; // Descending
+            });
+
+            console.log(`[Comments] Received and sorted ${comments.length} comments`);
+
+            // Update count
+            const countDisplay = document.getElementById('comment-count-display');
+            if (countDisplay) countDisplay.textContent = `${comments.length} Comments`;
+
+            if (comments.length === 0) {
+                listArea.innerHTML = `
+                    <div style="text-align:center; padding: 4rem 1rem; color: var(--color-text-muted); background: var(--color-bg-soft); border-radius: 20px;">
+                        <i data-lucide="message-square" style="width:40px; height:40px; opacity:0.2; margin-bottom:1rem;"></i>
+                        <p style="font-size: 1.1rem; font-weight: 500;">No comments yet.</p>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Be the first to share your thoughts!</p>
+                    </div>
+                `;
+            } else {
+                listArea.innerHTML = comments.map(c => {
+                    // Resilient date handling
+                    let dateStr = 'Just now';
+                    if (c.timestamp) {
+                        try {
+                            const date = c.timestamp.toDate ? c.timestamp.toDate() : new Date(c.timestamp);
+                            dateStr = date.toLocaleDateString('en-US', {
+                                month: 'short', day: 'numeric', year: 'numeric'
+                            });
+                        } catch (e) {
+                            console.warn('[Comments] Invalid timestamp for comment:', c.id);
+                        }
+                    }
+
+                    return `
+                        <div class="comment-item">
+                            <img src="${c.userAvatar || 'https://i.pravatar.cc/150'}" alt="${c.userName}" class="user-avatar-small">
+                            <div class="comment-body">
+                                <div class="comment-meta">
+                                    <span class="comment-author-name">${c.userName || 'Anonymous'}</span>
+                                    <span class="comment-date">· ${dateStr}</span>
+                                </div>
+                                <div class="comment-text">${c.content}</div>
+                                <div class="comment-actions">
+                                    <button class="comment-action-btn"><i data-lucide="thumbs-up" style="width:14px;"></i> Like</button>
+                                    <button class="comment-action-btn"><i data-lucide="corner-up-left" style="width:14px;"></i> Reply</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            if (window.lucide) lucide.createIcons();
+        }, (err) => {
+            console.error('[Comments] Subscription error:', err);
+            // If it's an index error, the error message often contains a link
+            if (err.message && err.message.includes('index')) {
+                listArea.innerHTML = '<p style="color:var(--color-primary); text-align:center; padding: 2rem;">Wait... The database is being optimized. Comments will appear shortly.</p>';
+            } else {
+                listArea.innerHTML = '<p style="color:var(--color-primary); text-align:center; padding: 2rem;">Unable to load conversation. Refreshing may help.</p>';
+            }
+        });
+    }
+
+    subscribeToComments();
+}

@@ -5,7 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us | The Pulse Blog</title>
+    <meta name="description"
+        content="Learn about The Pulse Blog, our mission, our team, and our commitment to high-quality, long-form journalism.">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Google AdSense Verification -->
     <meta name="google-adsense-account" content="ca-pub-3287630225807352">
@@ -13,7 +17,10 @@
         crossorigin="anonymous"></script>
 </head>
 
-<body>
+<body data-theme="light">
+    <!-- Reading Progress Bar -->
+    <div id="reading-progress" class="reading-progress"></div>
+
     <header class="site-header">
         <div class="container header-inner">
             <a href="index.html" class="logo">
@@ -38,31 +45,98 @@
         </div>
     </header>
 
-    <main class="container" style="padding: 80px 0; max-width: 800px;">
-        <h1 style="font-size: 3rem; margin-bottom: 2rem;">About The Pulse</h1>
-        <p style="font-size: 1.25rem; line-height: 1.8; color: var(--color-text-muted); margin-bottom: 2rem;">
-            The Pulse is a modern digital publication dedicated to exploring the intersection of technology, culture,
-            and information. We believe that in a world of constant noise, deep-dive insights and well-researched
-            stories are more important than ever.
-        </p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 60px;">
-            <div>
-                <h3 style="margin-bottom: 1rem;"><i data-lucide="target" style="color:var(--color-primary)"></i> Our
-                    Mission</h3>
-                <p>To provide our readers with high-quality, long-form content that informs, inspires, and challenges
-                    the status quo.</p>
+    <main class="container" style="padding: 80px 0; max-width: 900px;">
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <div
+                style="display: inline-flex; align-items: center; gap: 8px; background: var(--color-primary-light); color: var(--color-primary); padding: 8px 20px; border-radius: 100px; font-weight: 700; font-size: 0.9rem; margin-bottom: 24px;">
+                <i data-lucide="info" style="width: 18px; height: 18px;"></i> OUR STORY
             </div>
-            <div>
-                <h3 style="margin-bottom: 1rem;"><i data-lucide="users" style="color:var(--color-primary)"></i> Our
-                    Community</h3>
-                <p>We're more than just a blog; we're a community of curious minds exploring the future together.</p>
+            <h1 style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1.5rem; font-weight: 900; line-height: 1.1;">
+                Deciphering the <span
+                    style="background: linear-gradient(135deg, var(--color-primary), #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Future</span>.
+            </h1>
+            <p
+                style="font-size: 1.25rem; line-height: 1.8; color: var(--color-text-muted); max-width: 700px; margin: 0 auto;">
+                The Pulse is a premier digital publication dedicated to exploring the intersection of technology,
+                culture, and information. We believe in the power of deep-dive insights.
+            </p>
+        </div>
+
+        <section style="margin-bottom: 6rem;">
+            <h2 style="font-size: 2rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="star" style="color:var(--color-primary)"></i> Who We Are
+            </h2>
+            <div style="font-size: 1.15rem; line-height: 1.9; color: var(--color-text-muted);">
+                <p style="margin-bottom: 1.5rem;">
+                    Founded in 2024, <strong>The Pulse</strong> was born from a simple observation: in an era of
+                    15-second videos and surface-level headlines, there is a growing hunger for substance. We don't just
+                    report on what's happening; we explain <em>why</em> it matters and how it shapes the world around
+                    us.
+                </p>
+                <p>
+                    Our team consists of technologists, film critics, and data journalists who are passionate about
+                    their beats. Whether it's the latest breakthrough in quantum computing or a nuanced character study
+                    in independent cinema, we approach every story with curiosity and critical rigor.
+                </p>
+            </div>
+        </section>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 60px;">
+            <div
+                style="background: var(--color-bg-soft); padding: 40px; border-radius: 24px; border: 1px solid var(--color-border);">
+                <div
+                    style="width: 48px; height: 48px; background: var(--color-primary-light); color: var(--color-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                    <i data-lucide="target"></i>
+                </div>
+                <h3 style="margin-bottom: 1rem; font-size: 1.4rem;">Our Mission</h3>
+                <p style="line-height: 1.7; color: var(--color-text-muted);">To democratize complex knowledge. We take
+                    the world's most difficult topics and make them accessible, engaging, and relevant to the everyday
+                    reader.</p>
+            </div>
+            <div
+                style="background: var(--color-bg-soft); padding: 40px; border-radius: 24px; border: 1px solid var(--color-border);">
+                <div
+                    style="width: 48px; height: 48px; background: #fef3c7; color: #d97706; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h3 style="margin-bottom: 1rem; font-size: 1.4rem;">Our Quality Guarantee</h3>
+                <p style="line-height: 1.7; color: var(--color-text-muted);">Every piece of content on The Pulse goes
+                    through a rigorous fact-checking process. We value accuracy above speed and depth above clicks.</p>
+            </div>
+            <div
+                style="background: var(--color-bg-soft); padding: 40px; border-radius: 24px; border: 1px solid var(--color-border);">
+                <div
+                    style="width: 48px; height: 48px; background: #ecfdf5; color: #059669; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                    <i data-lucide="users"></i>
+                </div>
+                <h3 style="margin-bottom: 1rem; font-size: 1.4rem;">Our Community</h3>
+                <p style="line-height: 1.7; color: var(--color-text-muted);">With over 50,000 monthly readers, we are
+                    building a global community of curious minds who aren't afraid to ask "what's next?"</p>
             </div>
         </div>
+
+        <section
+            style="margin-top: 6rem; padding-top: 4rem; border-top: 1px solid var(--color-border); text-align: center;">
+            <h2 style="margin-bottom: 1.5rem;">Join Our Journey</h2>
+            <p
+                style="color: var(--color-text-muted); margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Stay updated with our weekly deeper-dives, reviews, and news summaries.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="contact.html" class="btn btn-primary">Contact Us</a>
+                <a href="index.html" class="btn" style="border: 1px solid var(--color-border);">Browse Articles</a>
+            </div>
+        </section>
     </main>
 
     <footer class="site-footer">
         <div class="container footer-bottom">
             <span>© 2026 The Pulse Blog. All rights reserved.</span>
+            <div style="display: flex; gap: 20px;">
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </div>
         </div>
     </footer>
 
@@ -89,14 +163,11 @@
                 </div>
                 <button type="submit" class="auth-btn-full" id="auth-submit-btn">Sign In</button>
             </form>
-
             <div class="auth-divider"><span>OR</span></div>
-
             <button class="btn-google" id="google-signin-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
                 Continue with Google
             </button>
-
             <div class="auth-footer">
                 <button id="auth-toggle-btn">Don't have an account? <span>Sign Up</span></button>
             </div>
@@ -104,6 +175,7 @@
     </div>
 
     <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
     <script>lucide.createIcons();</script>
 </body>
 

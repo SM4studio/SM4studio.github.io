@@ -101,7 +101,9 @@ async function renderUserArticles(uid) {
 
 // ─── Initialization ───────────────────────────────────────────
 
-auth.onAuthStateChanged(async (user) => {
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         await renderProfileData(user);
         await renderUserArticles(user.uid);

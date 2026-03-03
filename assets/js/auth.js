@@ -21,7 +21,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
     getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp,
-    deleteDoc, updateDoc, doc, getDoc, setDoc, where
+    deleteDoc, updateDoc, doc, getDoc, setDoc, where, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -81,7 +81,8 @@ async function updateUserProfile(data) {
 export {
     auth, db, analytics, logEvent, collection, addDoc, getDocs, query,
     orderBy, serverTimestamp, deleteDoc, updateDoc, doc, getDoc, where,
-    updateUserProfile
+    updateUserProfile, onSnapshot, onAuthStateChanged, signInWithPopup,
+    GoogleAuthProvider, signOut
 };
 
 // ─── DOM Helpers ─────────────────────────────────────────── 

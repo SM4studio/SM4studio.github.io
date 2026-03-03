@@ -11,29 +11,37 @@ let ALL_POSTS = [];
  * Returns a Promise that resolves to the posts array.
  */
 async function loadPosts() {
-  if (ALL_POSTS.length > 0) return ALL_POSTS; // cached
+  if (ALL_POSTS.length > 0) return ALL_POSTS;
 
   try {
-    // 1. Load static posts from JSON
+    // 1. Load static posts from JSON (Always first)
     const response = await fetch('data/posts.json');
     if (!response.ok) throw new Error('Failed to load local posts');
     const staticPosts = await response.json();
 
-    // 2. Load dynamic posts from Firestore
-    let dynamicPosts = [];
+    // Set initial store
+    ALL_POSTS = [...staticPosts];
+
+    // 2. Load dynamic posts from Firestore with a 5s timeout
     try {
       const { db, collection, getDocs, query, orderBy } = await import('./auth.js');
       const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
+
+      const firestoreFetch = getDocs(q);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+
+      const querySnapshot = await Promise.race([firestoreFetch, timeoutPromise]);
+      const dynamicPosts = [];
       querySnapshot.forEach((doc) => {
         dynamicPosts.push({ id: doc.id, ...doc.data() });
       });
+
+      // Update and merge
+      ALL_POSTS = [...dynamicPosts, ...staticPosts];
     } catch (firebaseErr) {
-      console.warn('Firestore load failed (likely not initialized yet):', firebaseErr);
+      console.warn('Firestore load failed or timed out:', firebaseErr);
     }
 
-    // Combine and set globally
-    ALL_POSTS = [...dynamicPosts, ...staticPosts];
     return ALL_POSTS;
   } catch (err) {
     console.error('Error loading posts:', err);
